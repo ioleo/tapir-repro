@@ -133,18 +133,21 @@ object Repro extends IOApp {
       uri"http://localhost:8080/" / "test"
     )
 
+  val expectedJson =
+    json"""{
+      "error": "invalid_name",
+      "error_description": "Valid name required."
+    }"""
+
   override def run(args: List[String]): IO[ExitCode] =
     for {
-      response <- httpRoutes.run(testReq)
-      body <- response.asJson
+      res <- httpRoutes.run(testReq)
+      body <- res.asJson
       _ <-
-        if (
-          body == json"""{ "error": "invalid_name", "error_description": "Valid name required."}"""
-        ) IO.println("Body as expected")
+        if (body == expectedJson) IO.println("Body as expected")
         else IO.println(s"Unexpected body: $body")
       _ <-
-        if (response.status == Status.Forbidden)
-          IO.println("Status as expected")
-        else IO.println(s"Unexpected status: ${response.status}")
+        if (res.status == Status.Forbidden) IO.println("Status as expected")
+        else IO.println(s"Unexpected status: ${res.status}")
     } yield ExitCode.Success
 }
