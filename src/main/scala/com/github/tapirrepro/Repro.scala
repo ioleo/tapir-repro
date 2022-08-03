@@ -48,7 +48,7 @@ object Repro extends IOApp {
         def apply(c: HCursor): Decoder.Result[A] =
           c.downField("error").as[String].map {
             case "internal_server_error" => InternalServerError.asInstanceOf[A]
-            case "invalid_name_error"    => InvalidNameError.asInstanceOf[A]
+            case "invalid_name"          => InvalidNameError.asInstanceOf[A]
             case _                       => ???
           }
       }
